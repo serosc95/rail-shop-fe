@@ -16,6 +16,16 @@ export const ProductPage: React.FC<Props> = ({ onSelectProduct }) => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  function formatNumber(numero: Number) {
+    const numberString = numero.toString();
+    const parteEntera = numberString.slice(0, -2);
+    const parteDecimal = numberString.slice(-2);
+    const formateado = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    return formateado + "." + parteDecimal;
+  }
+
+
   if (loading) return <p>Cargando productos...</p>;
 
   return (
@@ -49,7 +59,7 @@ export const ProductPage: React.FC<Props> = ({ onSelectProduct }) => {
           >
             <h2>{product.name}</h2>
             <p>{product.description}</p>
-            <p>Precio: ${product.price}</p>
+            <p>Precio: ${formatNumber(product.price)}</p>
             <p>Stock: {product.stock}</p>
             <button
               onClick={() => onSelectProduct(product.id)}

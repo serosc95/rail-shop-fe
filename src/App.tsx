@@ -7,6 +7,7 @@ import { ProductPage } from './components/ProductPage';
 import { PaymentForm } from './components/PaymentForm';
 import { Summary } from './components/Summary';
 import { Result } from './components/Result';
+
 import { createTransaction, resetStatus } from './store/transactionSlice';
 import { setCardData } from './store/paymentSlice';
 
@@ -24,7 +25,7 @@ const AppContent = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.transaction);
-  const { cardData, deliveryData } = useSelector((state: RootState) => state.payment);
+  const { cardData } = useSelector((state: RootState) => state.payment);
 
   const handleSelectProduct = (productId: string) => {
     if (cardData && isCardDataComplete(cardData)) {
@@ -35,7 +36,7 @@ const AppContent = () => {
   };
 
   const handlePayment = () => {
-    if (!selectedProductId || !cardData || !deliveryData) {
+    if (!selectedProductId || !cardData) {
       console.error('Datos incompletos');
       return;
     }
@@ -43,7 +44,6 @@ const AppContent = () => {
     dispatch(createTransaction({
       productId: selectedProductId,
       cardData,
-      deliveryAddress: deliveryData.address,
     }));
   };
 

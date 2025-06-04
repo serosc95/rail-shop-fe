@@ -1,27 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-
 export interface CardData {
   productId?: string;
   cardNumber: string;
   expiry: string;
   cvv: string;
   name: string;
-}
-
-interface DeliveryData {
-  address: string;
+  cantidad: number;
+  cuotas: number;
+  email: string;
 }
 
 interface PaymentState {
   cardData: CardData | null;
-  deliveryData: DeliveryData | null;
 }
 
 const initialState: PaymentState = {
   cardData: null,
-  deliveryData: null,
 };
 
 const paymentSlice = createSlice({
@@ -31,15 +27,11 @@ const paymentSlice = createSlice({
     setCardData(state, action: PayloadAction<CardData>) {
       state.cardData = action.payload;
     },
-    setDeliveryData(state, action: PayloadAction<DeliveryData>) {
-      state.deliveryData = action.payload;
-    },
     resetPayment(state) {
       state.cardData = null;
-      state.deliveryData = null;
     },
   },
 });
 
-export const { setCardData, setDeliveryData, resetPayment } = paymentSlice.actions;
+export const { setCardData, resetPayment } = paymentSlice.actions;
 export default paymentSlice.reducer;

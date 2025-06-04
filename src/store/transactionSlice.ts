@@ -8,7 +8,6 @@ interface TransactionPayload {
     cvv: string;
     name: string;
   };
-  deliveryAddress: string;
 }
 
 interface TransactionState {
