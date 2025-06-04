@@ -1,12 +1,17 @@
 import React from 'react';
 
 interface Props {
+  loading: boolean,
   success: boolean;
   message: string | null;
   onRestart: () => void;
 }
 
-export const Result: React.FC<Props> = ({ success, message, onRestart }) => {
+export const Result: React.FC<Props> = ({ loading, success, message, onRestart }) => {
+  if (loading) {
+    return <div>Procesando transacción...</div>;
+  }
+  
   return (
     <div style={{ padding: 16, maxWidth: 400, margin: 'auto', textAlign: 'center' }}>
       {success ? (

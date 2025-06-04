@@ -1,8 +1,8 @@
-// src/App.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './store';
-import type { RootState } from './store';
+import type { AppDispatch, RootState } from './store';
+
 import { ProductPage } from './components/ProductPage';
 import { PaymentForm } from './components/PaymentForm';
 import { Summary } from './components/Summary';
@@ -10,57 +10,77 @@ import { Result } from './components/Result';
 import { createTransaction, resetStatus } from './store/transactionSlice';
 import { setCardData } from './store/paymentSlice';
 
+import { isCardDataComplete } from './utils/validators';
+import { useCheckoutSteps } from './hooks/useCheckoutSteps';
+
 const AppContent = () => {
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [step, setStep] = useState(1);
-  const dispatch = useDispatch();
-  const transactionStatus = useSelector((state: RootState) => state.transaction.status);
-  const transactionError = useSelector((state: RootState) => state.transaction.error);
-  const paymentState = useSelector((state: RootState) => state.payment);
+  const {
+    currentStep,
+    goToNextStep,
+    resetSteps,
+    selectedProductId,
+    setSelectedProductId,
+  } = useCheckoutSteps();
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { status, error } = useSelector((state: RootState) => state.transaction);
+  const { cardData, deliveryData } = useSelector((state: RootState) => state.payment);
 
   const handleSelectProduct = (productId: string) => {
+    if (cardData && isCardDataComplete(cardData)) {
+      dispatch(setCardData({ ...cardData, productId }));
+    }
     setSelectedProductId(productId);
-    dispatch(setCardData({ ...paymentState.cardData, productId }));
-    setStep(2);
+    goToNextStep();
   };
 
   const handlePayment = () => {
-    if (!selectedProductId || !paymentState.cardData || !paymentState.deliveryData) {
-      alert('Datos incompletos');
+    if (!selectedProductId || !cardData || !deliveryData) {
+      console.error('Datos incompletos');
       return;
     }
+
     dispatch(createTransaction({
       productId: selectedProductId,
-      cardData: paymentState.cardData,
-      deliveryAddress: paymentState.deliveryData.address,
+      cardData,
+      deliveryAddress: deliveryData.address,
     }));
   };
 
   React.useEffect(() => {
-    if (transactionStatus === 'success') setStep(4);
-    if (transactionStatus === 'failed') setStep(4);
-  }, [transactionStatus]);
+    if (status === 'success' || status === 'failed') {
+      goToNextStep();
+    }
+  }, [status]);
 
   const handleRestart = () => {
-    setStep(1);
-    setSelectedProductId(null);
+    resetSteps();
     dispatch(resetStatus());
   };
 
-  return (
-    <>
-      {step === 1 && <ProductPage onSelectProduct={handleSelectProduct} />}
-      {step === 2 && <PaymentForm onNext={() => setStep(3)} />}
-      {step === 3 && <Summary onPay={handlePayment} />}
-      {step === 4 && (
-        <Result
-          success={transactionStatus === 'success'}
-          message={transactionError}
-          onRestart={handleRestart}
-        />
-      )}
-    </>
-  );
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <ProductPage onSelectProduct={handleSelectProduct} />;
+      case 2:
+        return <PaymentForm onNext={goToNextStep} />;
+      case 3:
+        return <Summary onPay={handlePayment} />;
+      case 4:
+        return (
+          <Result
+            loading={status === 'loading'}
+            success={status === 'success'}
+            message={error}
+            onRestart={handleRestart}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return <>{renderStep()}</>;
 };
 
 const App = () => (

@@ -11,7 +11,7 @@ export interface Product {
 export const fetchProducts = createAsyncThunk<Product[]>(
   'products/fetch',
   async () => {
-    const res = await fetch('http://localhost:3000/products');
+    const res = await fetch('http://localhost:3000/api/products');
     console.log("RESULTADO", res);
     return await res.json();
   }
