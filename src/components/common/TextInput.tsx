@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useId } from 'react';
 
-interface Props {
+interface TextInputProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -10,9 +10,11 @@ interface Props {
   error?: string;
   name?: string;
   autoComplete?: string;
+  disabled?: boolean;
+  required?: boolean;
 }
 
-export const TextInput: React.FC<Props> = ({
+export const TextInput: React.FC<TextInputProps> = ({
   label,
   value,
   onChange,
@@ -22,26 +24,34 @@ export const TextInput: React.FC<Props> = ({
   error,
   name,
   autoComplete,
-}) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-    <label htmlFor={name} style={{ fontWeight: 'bold' }}>{label}</label>
-    <input
-      id={name}
-      name={name}
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      maxLength={maxLength}
-      autoComplete={autoComplete}
-      inputMode={type === 'tel' ? 'numeric' : undefined}
-      aria-invalid={!!error}
-      style={{
-        padding: 8,
-        borderRadius: 4,
-        border: `1px solid ${error ? 'red' : '#ccc'}`
-      }}
-    />
-    {error && <span style={{ color: 'red', fontSize: 12 }}>{error}</span>}
-  </div>
-);
+  disabled,
+  required,
+}) => {
+  const inputId = useId();
+
+  return (
+    <div className="w-full" style={{justifyContent: "space-between", display: "flex", alignItems: "center"}}>
+      <label htmlFor={inputId} className="font-medium text-sm">
+        {label}
+      </label>
+      <input
+        id={inputId}
+        name={name}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        autoComplete={autoComplete}
+        disabled={disabled}
+        required={required}
+        inputMode={type === 'tel' ? 'numeric' : undefined}
+        aria-invalid={!!error}
+        className={`px-3 py-2 rounded-md border text-sm focus:outline-none ${
+          error ? 'border-red-500' : 'border-gray-300'
+        } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+      />
+      {error && <span className="text-red-500 text-xs">{error}</span>}
+    </div>
+  );
+};

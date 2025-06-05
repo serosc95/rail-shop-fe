@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from '../store';
+import {
+  goToNextStep,
+  resetSteps,
+  setSelectedProductId,
+} from '../store/checkoutSlice';
 
 export const useCheckoutSteps = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
-  const goToNextStep = () => setCurrentStep(prev => prev + 1);
-  const resetSteps = () => {
-    setCurrentStep(1);
-    setSelectedProductId(null);
-  };
+  const dispatch: AppDispatch = useDispatch();
+  const currentStep = useSelector((state: RootState) => state.checkout.currentStep);
+  const selectedProductId = useSelector((state: RootState) => state.checkout.selectedProductId);
 
   return {
     currentStep,
-    goToNextStep,
-    resetSteps,
     selectedProductId,
-    setSelectedProductId,
+    goToNextStep: () => dispatch(goToNextStep()),
+    resetSteps: () => dispatch(resetSteps()),
+    setSelectedProductId: (id: string | null) => dispatch(setSelectedProductId(id)),
   };
 };

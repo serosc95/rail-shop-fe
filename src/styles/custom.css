@@ -1,0 +1,22 @@
+.summary-container {
+    padding: 1rem;
+    max-width: 400px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .pay-button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .pay-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from './common/Button';
+
 
 interface Props {
   loading: boolean,
@@ -15,19 +17,19 @@ export const Result: React.FC<Props> = ({ loading, success, message, onRestart }
   return (
     <div style={{ padding: 16, maxWidth: 400, margin: 'auto', textAlign: 'center' }}>
       {success ? (
-        <h2>Pago realizado con éxito 🎉</h2>
+        <h2>Pago realizado con éxito</h2>
       ) : (
         <>
-          <h2>Error en el pago ❌</h2>
+          <h2>Error en el pago</h2>
           <p>{message}</p>
         </>
       )}
-      <button
+      <Button
         onClick={onRestart}
         style={{ marginTop: 20, padding: 10, backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: 5 }}
       >
         Volver al inicio
-      </button>
+      </Button>
     </div>
   );
 };

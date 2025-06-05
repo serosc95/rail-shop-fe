@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './store';
 import type { AppDispatch, RootState } from './store';
@@ -8,13 +8,10 @@ import { PaymentForm } from './components/PaymentForm';
 import { Summary } from './components/Summary';
 import { Result } from './components/Result';
 
-import { createTransaction, resetStatus } from './store/transactionSlice';
-import { setCardData } from './store/paymentSlice';
-
-import { isCardDataComplete } from './utils/validators';
 import { useCheckoutSteps } from './hooks/useCheckoutSteps';
+import { createTransaction, resetStatus } from './store/transactionSlice';
 
-const AppContent = () => {
+const AppContent: React.FC = () => {
   const {
     currentStep,
     goToNextStep,
@@ -28,42 +25,69 @@ const AppContent = () => {
   const { cardData } = useSelector((state: RootState) => state.payment);
 
   const handleSelectProduct = (productId: string) => {
-    if (cardData && isCardDataComplete(cardData)) {
-      dispatch(setCardData({ ...cardData, productId }));
-    }
     setSelectedProductId(productId);
     goToNextStep();
   };
 
   const handlePayment = () => {
+    console.log("cardData", cardData);
+    console.log("selectedProductId", selectedProductId);
     if (!selectedProductId || !cardData) {
-      console.error('Datos incompletos');
+      console.warn('No se puede procesar el pago: datos incompletos');
       return;
     }
 
-    dispatch(createTransaction({
-      productId: selectedProductId,
-      cardData,
-    }));
-  };
+    const {
+      cardNumber,
+      cvc,
+      expMonth,
+      expYear,
+      cardHolder,
+      email,
+      cantidad,
+      cuotas,
+    } = cardData;
 
-  React.useEffect(() => {
-    if (status === 'success' || status === 'failed') {
-      goToNextStep();
-    }
-  }, [status]);
+    dispatch(
+      createTransaction({
+        productId: selectedProductId,
+        cantidad,
+        cuotas,
+        customerEmail: email,
+        cardData: {
+          cardNumber,
+          cvc,
+          expMonth,
+          expYear,
+          cardHolder,
+        },
+      })
+    );
+  };
 
   const handleRestart = () => {
     resetSteps();
     dispatch(resetStatus());
   };
 
-  const renderStep = () => {
+  useEffect(() => {
+    if (status === 'success' || status === 'failed') {
+      goToNextStep();
+    }
+  }, [status]);
+
+  const renderStepContent = () => {
     switch (currentStep) {
       case 1:
         return <ProductPage onSelectProduct={handleSelectProduct} />;
       case 2:
-        return <PaymentForm onNext={goToNextStep} />;
+        return selectedProductId ? (
+          <PaymentForm productId={selectedProductId} onNext={goToNextStep} />
+        ) : (
+          <p style={{ textAlign: 'center', color: 'red' }}>
+            Error: No hay producto seleccionado.
+          </p>
+        );
       case 3:
         return <Summary onPay={handlePayment} />;
       case 4:
@@ -76,14 +100,18 @@ const AppContent = () => {
           />
         );
       default:
-        return null;
+        return (
+          <p style={{ textAlign: 'center' }}>
+            Paso inválido. Por favor, reinicia el proceso.
+          </p>
+        );
     }
   };
 
-  return <>{renderStep()}</>;
+  return <main>{renderStepContent()}</main>;
 };
 
-const App = () => (
+const App: React.FC = () => (
   <Provider store={store}>
     <AppContent />
   </Provider>

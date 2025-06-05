@@ -2,79 +2,83 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setCardData } from '../store/paymentSlice';
 import { TextInput } from './common/TextInput';
+import { validateCardForm } from '../utils/validators';
+import { Button } from './common/Button';
+import type { AppDispatch } from '../store';
 
 interface Props {
   onNext: () => void;
+  productId: string | null;
 }
 
-export const PaymentForm: React.FC<Props> = ({ onNext }) => {
-  const dispatch = useDispatch();
+export const PaymentForm: React.FC<Props> = ({ onNext, productId }) => {
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [name, setName] = useState('');
-  const [cantidad, setCantidad] = useState('');
-  const [cuotas, setCuotas] = useState('');
-  const [email, setEmail] = useState('');
+  const [form, setForm] = useState({
+    cardNumber: '',
+    expiry: '',
+    cvv: '',
+    name: '',
+    cantidad: '',
+    cuotas: '',
+    email: '',
+  });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (cardNumber.length < 13 || cardNumber.length > 19)
-      newErrors.cardNumber = 'El número de tarjeta debe tener entre 13 y 19 dígitos';
-
-    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry))
-      newErrors.expiry = 'Formato inválido. Usa MM/AA';
-
-    if (cvv.length < 3 || cvv.length > 4)
-      newErrors.cvv = 'CVV debe tener 3 o 4 dígitos';
-
-    if (!name.trim())
-      newErrors.name = 'Nombre requerido';
-
-    if (!cantidad || Number(cantidad) <= 0)
-      newErrors.cantidad = 'Ingrese una cantidad válida';
-
-    if (!cuotas || !Number.isInteger(Number(cuotas)) || Number(cuotas) <= 0)
-      newErrors.cuotas = 'Ingrese un número entero mayor que 0';
-
-    if (!validateEmail(email))
-      newErrors.email = 'Correo electrónico inválido';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = () => {
-    if (!validate()) return;
+    const validation = validateCardForm(form);
 
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
+
+    if (!productId) {
+      console.error('ID de producto no disponible');
+      return;
+    }
+
+    setErrors({});
     dispatch(
-      setCardData({ cardNumber, expiry, cvv, name, cantidad: Number(cantidad), cuotas: Number(cuotas), email })
+      setCardData({
+        cardNumber: form.cardNumber,
+        cvc: form.cvv,
+        expMonth: form.expiry.split('/')[0],
+        expYear: form.expiry.split('/')[1],
+        cardHolder: form.name,
+        email: form.email,
+        productId,
+        cantidad: Number(form.cantidad) || 0,
+        cuotas: Number(form.cuotas) || 0,
+      })
     );
+    
+
     onNext();
   };
 
   return (
-    <div style={{
-      padding: 16,
-      maxWidth: 400,
-      margin: 'auto',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 16
-    }}>
+    <div
+      style={{
+        padding: 16,
+        maxWidth: 400,
+        margin: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+      }}
+    >
       <h2 style={{ textAlign: 'center' }}>Información de pago</h2>
 
       <TextInput
         label="Número de tarjeta"
-        value={cardNumber}
-        onChange={setCardNumber}
+        value={form.cardNumber}
+        onChange={(val) => handleChange('cardNumber', val)}
         placeholder="Ej: 1234 5678 9012 3456"
         type="tel"
         maxLength={19}
@@ -85,8 +89,8 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
 
       <TextInput
         label="Fecha de expiración"
-        value={expiry}
-        onChange={setExpiry}
+        value={form.expiry}
+        onChange={(val) => handleChange('expiry', val)}
         placeholder="MM/AA"
         type="text"
         maxLength={5}
@@ -96,9 +100,9 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
       />
 
       <TextInput
-        label="CVV"
-        value={cvv}
-        onChange={setCvv}
+        label="CVC"
+        value={form.cvv}
+        onChange={(val) => handleChange('cvv', val)}
         placeholder="Ej: 123"
         type="tel"
         maxLength={4}
@@ -109,8 +113,8 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
 
       <TextInput
         label="Nombre en la tarjeta"
-        value={name}
-        onChange={setName}
+        value={form.name}
+        onChange={(val) => handleChange('name', val)}
         placeholder="Nombre completo"
         error={errors.name}
         name="name"
@@ -119,8 +123,8 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
 
       <TextInput
         label="Cantidad"
-        value={cantidad}
-        onChange={setCantidad}
+        value={form.cantidad}
+        onChange={(val) => handleChange('cantidad', val)}
         placeholder="Monto total"
         type="number"
         error={errors.cantidad}
@@ -129,8 +133,8 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
 
       <TextInput
         label="Cuotas"
-        value={cuotas}
-        onChange={setCuotas}
+        value={form.cuotas}
+        onChange={(val) => handleChange('cuotas', val)}
         placeholder="Número de cuotas"
         type="number"
         error={errors.cuotas}
@@ -139,8 +143,8 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
 
       <TextInput
         label="Correo electrónico"
-        value={email}
-        onChange={setEmail}
+        value={form.email}
+        onChange={(val) => handleChange('email', val)}
         placeholder="email@ejemplo.com"
         type="email"
         error={errors.email}
@@ -148,7 +152,7 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
         autoComplete="email"
       />
 
-      <button
+      <Button
         onClick={handleSubmit}
         style={{
           padding: 10,
@@ -157,11 +161,11 @@ export const PaymentForm: React.FC<Props> = ({ onNext }) => {
           border: 'none',
           borderRadius: 6,
           fontWeight: 'bold',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Siguiente
-      </button>
+      </Button>
     </div>
   );
 };
