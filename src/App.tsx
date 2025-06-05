@@ -30,8 +30,6 @@ const AppContent: React.FC = () => {
   };
 
   const handlePayment = () => {
-    console.log("cardData", cardData);
-    console.log("selectedProductId", selectedProductId);
     if (!selectedProductId || !cardData) {
       console.warn('No se puede procesar el pago: datos incompletos');
       return;

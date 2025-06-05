@@ -21,11 +21,7 @@ export const Summary: React.FC<SummaryProps> = ({ onPay }) => {
 
   const handlePayClick = async () => {
     setLoading(true);
-    try {
-      await onPay();
-    } finally {
-      setLoading(false);
-    }
+    await onPay();
   };
 
   if (!product || !cardData) {
@@ -63,7 +59,11 @@ export const Summary: React.FC<SummaryProps> = ({ onPay }) => {
           marginTop: 16,
         }}
       >
-        {loading ? 'Procesando...' : 'Pagar'}
+        {loading ? (
+          <>
+            <span className="spinner" aria-hidden="true" /> Procesando...
+          </>
+        ) : 'Pagar'}
       </Button>
     </section>
   );
