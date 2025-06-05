@@ -31,6 +31,7 @@ Este proyecto es una aplicación web de tienda que permite seleccionar productos
 
 ## 📁 Estructura del proyecto
 
+```bash
 src/
  ├── components/          # Componentes React reutilizables
  │    ├── ProductPage.tsx
@@ -49,6 +50,7 @@ src/
  │    └── format.ts
  ├── App.tsx
  └── index.tsx
+ ```
  
 ---
 
