@@ -1,54 +1,104 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Proyecto Tienda con Pago y Redux
 
-Currently, two official plugins are available:
+[![React Version](https://img.shields.io/badge/react-18.x-blue)](https://reactjs.org/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Este proyecto es una aplicación web de tienda que permite seleccionar productos, ingresar datos de pago con tarjeta de crédito y procesar transacciones. Está construida con React y Redux Toolkit para manejo global del estado, asegurando una arquitectura escalable y mantenible.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Tecnologías utilizadas
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **React-Vite** Tecnologia principal
+- **Redux Toolkit** para manejo del estado global
+- **React-Redux** para integración con React
+- **TypeScript** para tipado estático
+- **CSS modular o estilos inline** (según componentes)
+- Estructura modular con carpetas `components`, `store`, `hooks`, `utils`
+
+---
+
+## Características principales
+
+- Selección de productos con control de stock
+- Formulario de pago con validación completa (tarjeta, email, cuotas)
+- Resumen del pago con datos claros y formato amigable
+- Navegación paso a paso del flujo de compra
+- Estado global centralizado con Redux Toolkit
+- Simulación de proceso de pago con estados de carga, éxito y error
+
+---
+
+## 📁 Estructura del proyecto
+
+src/
+ ├── components/          # Componentes React reutilizables
+ │    ├── ProductPage.tsx
+ │    ├── PaymentForm.tsx
+ │    ├── Summary.tsx
+ │    └── Result.tsx
+ ├── hooks/
+ │    └── useCheckoutSteps.ts
+ ├── store/
+ │    ├── productsSlice.ts
+ │    ├── paymentSlice.ts
+ │    ├── transactionSlice.ts
+ │    └── index.ts        # Configuración del store
+ ├── utils/
+ │    ├── validators.ts
+ │    └── format.ts
+ ├── App.tsx
+ └── index.tsx
+ 
+---
+
+## 🔧 Instalación y ejecución en desarrollo
+
+1. Clonar repositorio
+
+```bash
+git clone https://github.com/tuusuario/tu-proyecto.git
+cd tu-proyecto
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Instalar dependencias
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
+# o
+yarn install
 ```
+
+3. Ejecutar servidor de desarrollo
+
+```bash
+npm start
+# o
+yarn start
+```
+
+4. Abrir en el navegador
+
+```
+http://localhost:3000
+```
+
+---
+
+## 🛠 Uso
+
+- Selecciona un producto disponible.
+- Completa el formulario de pago con datos válidos.
+- Revisa el resumen y confirma el pago.
+- Visualiza el resultado de la transacción.
+- Puedes reiniciar el flujo para realizar otra compra.
+
+---
+
+## 📋 Notas adicionales
+
+- La validación es básica y puede extenderse para mayor robustez.
+- Se puede integrar una API real de pagos para producción.
+- Se recomienda añadir pruebas unitarias y de integración.
+- Usar ESLint y Prettier para mantener calidad del código.
+- El diseño actual es funcional, puede mejorarse con librerías UI.
