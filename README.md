@@ -18,7 +18,7 @@ Este proyecto es una aplicación web de tienda que permite seleccionar productos
 
 ---
 
-## Características principales
+## ⚙️ Características principales
 
 - Selección de productos con control de stock
 - Formulario de pago con validación completa (tarjeta, email, cuotas)
@@ -59,8 +59,8 @@ src/
 1. Clonar repositorio
 
 ```bash
-git clone https://github.com/tuusuario/tu-proyecto.git
-cd tu-proyecto
+git clone https://github.com/serosc95/rail-shop-fe.git
+cd rail-shop-fe
 ```
 
 2. Instalar dependencias
