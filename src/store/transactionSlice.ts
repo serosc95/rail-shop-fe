@@ -19,7 +19,7 @@ interface TransactionResponse {
   message: string;
 }
 
-interface TransactionState {
+export interface TransactionState {
   status: 'idle' | 'loading' | 'success' | 'failed';
   error: string | null;
   successMessage: string | null;

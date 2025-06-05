@@ -18,7 +18,7 @@ interface RawProduct {
   stock: number;
 }
 
-interface ProductsState {
+export interface ProductsState {
   items: Product[];
   loading: boolean;
   error: string | null;

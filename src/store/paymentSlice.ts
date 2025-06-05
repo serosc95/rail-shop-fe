@@ -19,7 +19,7 @@ export interface CardData extends CardInfo, ContactInfo {
   cuotas: number;
 }
 
-interface PaymentState {
+export interface PaymentState {
   cardData: CardData | null;
   status: 'idle' | 'loading' | 'success' | 'error';
   error: string | null;
